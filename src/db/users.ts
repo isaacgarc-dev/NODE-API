@@ -4,9 +4,12 @@ const UserSchema = new mongoose.Schema({
   username: { type: String, required: true },
   email: { type: String, required: true },
   authentication: {
-    password: { type: String, required: true, select: false },
-    salt: { type: String, select: false },
-    sessionToken: { type: String, select: false },
+    type: new mongoose.Schema({
+      password: { type: String, required: true, select: false },
+      salt: { type: String, required: true, select: false },
+      sessionToken: { type: String, required: true, select: false },
+    }),
+    required: true,
   },
 });
 

@@ -7,6 +7,8 @@ export const login = async (req: express.Request, res: express.Response) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
+      console.log("Incomplete form");
+      console.log(req.body);
       return res.sendStatus(400);
     }
 
@@ -14,12 +16,13 @@ export const login = async (req: express.Request, res: express.Response) => {
       "+authentication.salt +authentication.password"
     );
     if (!user) {
+      console.log("User not found");
       return res.sendStatus(400);
     }
 
     const expectedHash = authentication(user.authentication.salt, password);
 
-    if (user.authentication?.password !== expectedHash) {
+    if (user.authentication.password !== expectedHash) {
       return res.sendStatus(403);
     }
 
@@ -36,7 +39,7 @@ export const login = async (req: express.Request, res: express.Response) => {
       path: "/",
     });
 
-    return res.status(200).json().end;
+    return res.status(200).json("Logged Succesfully").end;
   } catch (error) {
     console.log(error);
     return res.sendStatus(400);
@@ -52,7 +55,7 @@ export const register = async (req: express.Request, res: express.Response) => {
     }
 
     const existingUser = await getUserByEmail(email);
-    if (existingUser) {
+    if (!existingUser) {
       return res.sendStatus(400);
     }
 
@@ -63,6 +66,7 @@ export const register = async (req: express.Request, res: express.Response) => {
       authentication: {
         salt,
         password: authentication(salt, password),
+        sessionToken: "none",
       },
     });
 
